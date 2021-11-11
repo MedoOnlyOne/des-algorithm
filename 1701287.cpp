@@ -65,16 +65,21 @@ string encrypt(string text, string key){
     string d = key_56.substr(28, 56);
     string k = "";
 
-    // 16 rounds
+    // generate the 16 keys
+    string keys[16];
     for (int i = 0; i < 16; i++){
         // generate the key
         key_56 = left_circular_shift(i + 1, key_56);
         k = permutated_choice_2(key_56);
-        
+        keys[i] = k;
+    }
+
+    // 16 rounds
+    for (int i = 0; i < 16; i++){
         // update l, and r
         string old_l = l, old_r = r;
         l = old_r;
-        r = xor_bin(old_l, f_function(old_r, k));
+        r = xor_bin(old_l, f_function(old_r, keys[i]));
     }
     // swap
     string text_swap = r + l;
@@ -106,7 +111,7 @@ string decrypt(string cipher, string key){
         // generate the key
         key_56 = left_circular_shift(i + 1, key_56);
         k = permutated_choice_2(key_56);
-        keys[15 - i] = k;
+        keys[i] = k;
     }
 
     // 16 rounds
@@ -114,7 +119,7 @@ string decrypt(string cipher, string key){
         // update l, and r
         string old_l = l, old_r = r;
         l = old_r;
-        r = xor_bin(old_l, f_function(old_r, keys[i]));
+        r = xor_bin(old_l, f_function(old_r, keys[15 - i]));
     }
     // swap
     string cipher_swap = r + l;
