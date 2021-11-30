@@ -1,11 +1,19 @@
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+
 #include <iostream>
 #include <string>
 #include <cmath>
 #include <bitset>
-
 using namespace std;
 
+typedef unsigned long long u64;
+
 // helper functions
+u64 strHex_to_u64(char* data);
+
+
 string hex_to_bin(string hex);
 string bin_to_hex(string bin);
 int bin_to_decimal(string s);
@@ -35,17 +43,37 @@ string encrypt(string text, string key);
 string decrypt(string cipher, string key);
 
 int main(int argc, char* argv[]){
-    string op = argv[1];
-    string data = argv[2];
-    string key = argv[3];
-    if (op == "encrypt"){
-        string cipher = encrypt(data, key);
-        cout << "cipher: " << cipher << '\n';
-    } else {
-        string text = decrypt(data, key);
-        cout << "plain: " << text << "\n";
-    }
+    char* op = argv[1];
+    char* data = argv[2];
+    char* key = argv[3];
+
+    printf("Data: %016llX %lld\n", strHex_to_u64(data), strHex_to_u64(data));
+    printf("Key: %016llX %lld\n", strHex_to_u64(key), strHex_to_u64(key));
+    
+    // if (op == "encrypt"){
+    //     string cipher = encrypt(data, key);
+    //     cout << "cipher: " << cipher << '\n';
+    // } else {
+    //     string text = decrypt(data, key);
+    //     cout << "plain: " << text << "\n";
+    // }
     return 0;
+}
+
+u64 strHex_to_u64(char* data){
+    assert(strlen(data) == 16);
+
+    u64 result = 0;
+    for(int i = 0; i < 16; i++){
+        if (data[i] >= '0' && data[i] <= '9'){
+            result |= (u64)(data[i] - '0')<<((15 - i) << 2);
+        } else if (data[i] >= 'A' && data[i] <= 'F'){
+            result |= (u64)(data[i] - 'A' + 10)<<((15 - i) << 2);
+        } else if (data[i] >= 'a' && data[i] <= 'f'){
+            result |= (u64)(data[i] - 'a' + 10)<<((15 - i) << 2);
+        }
+    }
+    return result;
 }
 
 
